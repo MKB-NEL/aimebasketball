@@ -698,8 +698,9 @@
             </div>
         </div>
     </div>
-    <script type="module">
-    // Import Firebase SDK
+
+    <!-- Module Script for Firebase Operations -->
+<script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
     import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-analytics.js';
     import { 
@@ -720,74 +721,15 @@
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
+    getAnalytics(app);
     const db = getFirestore(app);
 
-    // UI Elements
-    const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content');
-    const toggleSidebarBtn = document.getElementById('toggle-sidebar');
-    const modal = document.getElementById('confirmation-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message');
-    const modalCancel = document.getElementById('modal-cancel');
-    const modalConfirm = document.getElementById('modal-confirm');
-
-    // Global variables
-    let pendingAction = null;
+    // Local state
     let allPlayers = [];
     let allNews = [];
     let allGallery = [];
     let allSponsors = [];
-
-    // Sidebar toggle
-    toggleSidebarBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        content.classList.toggle('expanded');
-        toggleSidebarBtn.innerHTML = sidebar.classList.contains('collapsed') ? 
-            '<i class="fas fa-chevron-right"></i>' : '<i class="fas fa-chevron-left"></i>';
-    });
-
-    // Modal functions
-    function showConfirmation(title, message, onConfirm) {
-        modalTitle.textContent = title;
-        modalMessage.textContent = message;
-        modal.classList.remove('hidden');
-        pendingAction = onConfirm;
-    }
-
-    modalCancel.addEventListener('click', () => {
-        modal.classList.add('hidden');
-        pendingAction = null;
-    });
-
-    modalConfirm.addEventListener('click', () => {
-        if (pendingAction) pendingAction();
-        modal.classList.add('hidden');
-        pendingAction = null;
-    });
-
-    // Tab navigation
-    function showTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-        document.getElementById(`${tabName}-tab`).classList.remove('hidden');
-    }
-
-    // Show loading spinner
-    function showLoading(buttonId) {
-        const btnText = document.getElementById(`${buttonId}-btn-text`);
-        const spinner = document.getElementById(`${buttonId}-spinner`);
-        if (btnText) btnText.textContent = buttonId.includes('form') ? 'Saving...' : 'Processing...';
-        if (spinner) spinner.classList.remove('hidden');
-    }
-
-    // Hide loading spinner
-    function hideLoading(buttonId, resetText = 'Submit') {
-        const btnText = document.getElementById(`${buttonId}-btn-text`);
-        const spinner = document.getElementById(`${buttonId}-spinner`);
-        if (btnText) btnText.textContent = resetText;
-        if (spinner) spinner.classList.add('hidden');
-    }
+    let coachBadges = [];
 
     // Log activity
     async function logActivity(action, details) {
@@ -802,10 +744,9 @@
         }
     }
 
-    // Dashboard
+    // Dashboard data
     async function loadDashboard() {
         try {
-            // Load counts
             const playersSnapshot = await getDocs(collection(db, 'players'));
             document.getElementById('player-count').textContent = playersSnapshot.size;
             
@@ -816,36 +757,31 @@
             document.getElementById('gallery-count').textContent = gallerySnapshot.size;
             
             const sponsorsSnapshot = await getDocs(collection(db, 'sponsors'));
-            document.getElementById('sponsor-count').value = sponsorsSnapshot.size;
+            document.getElementById('sponsor-count').textContent = sponsorsSnapshot.size;
             
-            // Load recent activity
             const activityQuery = query(collection(db, 'activity_logs'), orderBy('timestamp', 'desc'), limit(5));
             const activitySnapshot = await getDocs(activityQuery);
             const activityLog = document.getElementById('activity-log');
-            activityLog.innerHTML = '';
+            activityLog.innerHTML = activitySnapshot.empty ? '<p class="text-gray-500">No recent activity.</p>' : '';
             
-            if (activitySnapshot.empty) {
-                activityLog.innerHTML = '<p class="text-gray-500">No recent activity.</p>';
-            } else {
-                activitySnapshot.forEach(doc => {
-                    const log = doc.data();
-                    activityLog.innerHTML += `
-                        <div class="flex items-center">
-                            <div class="p-2 bg-blue-100 rounded-full mr-3">
-                                <i class="fas fa-info-circle text-blue-600"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium">${log.action}</p>
-                                <p class="text-sm text-gray-500">${log.details}</p>
-                                <p class="text-xs text-gray-400">${log.timestamp?.toDate().toLocaleString() || 'Just now'}</p>
-                            </div>
+            activitySnapshot.forEach(doc => {
+                const log = doc.data();
+                activityLog.innerHTML += `
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-full mr-3">
+                            <i class="fas fa-info-circle text-blue-600"></i>
                         </div>
-                    `;
-                });
-                
-                // Update last updated
-                const latestLog = activitySnapshot.docs[0].data();
-                document.getElementById('last-updated').textContent = latestLog.timestamp?.toDate().toLocaleString() || 'N/A';
+                        <div>
+                            <p class="font-medium">${log.action}</p>
+                            <p class="text-sm text-gray-500">${log.details}</p>
+                            <p class="text-xs text-gray-400">${log.timestamp?.toDate().toLocaleString() || 'Just now'}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (!activitySnapshot.empty) {
+                document.getElementById('last-updated').textContent = activitySnapshot.docs[0].data().timestamp?.toDate().toLocaleString() || 'N/A';
             }
         } catch (e) {
             console.error('Error loading dashboard:', e);
@@ -853,11 +789,10 @@
         }
     }
 
-    // Next Match Form Handling
-    const nextMatchForm = document.getElementById('next-match-form');
-    nextMatchForm.addEventListener('submit', async (e) => {
+    // Next Match
+    document.getElementById('next-match-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('next-match');
+        window.showLoading('next-match');
         
         try {
             const homeTeam = document.getElementById('home-team').value.trim();
@@ -879,33 +814,16 @@
             
             await logActivity('Added Game', `Added match against ${opponent} on ${matchDate}`);
             alert('Match added successfully!');
-            nextMatchForm.reset();
+            e.target.reset();
         } catch (e) {
             console.error('Error adding match:', e);
             alert('Error adding match: ' + e.message);
         } finally {
-            hideLoading('next-match', 'Update Match');
+            window.hideLoading('next-match', 'Update Match');
         }
     });
 
-    // Team Management
-    function showAddPlayerForm() {
-        const formContainer = document.getElementById('player-form-container');
-        const formTitle = document.getElementById('player-form-title');
-        const form = document.getElementById('player-form');
-        const btnText = document.getElementById('player-form-btn-text');
-        
-        formTitle.textContent = 'Add New Player';
-        btnText.textContent = 'Add Player';
-        form.reset();
-        document.getElementById('player-id').value = '';
-        formContainer.classList.remove('hidden');
-    }
-
-    function hidePlayerForm() {
-        document.getElementById('player-form-container').classList.add('hidden');
-    }
-
+    // Players
     async function loadPlayers() {
         const playersList = document.getElementById('players-list');
         playersList.innerHTML = '';
@@ -928,10 +846,10 @@
                         <td class="px-6 py-4 whitespace-nowrap">${player.position}</td>
                         <td class="px-6 py-4 whitespace-nowrap">${player.nationality}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-right">
-                            <button onclick="editPlayer('${player.id}')" class="text-blue-600 hover:text-blue-800 mr-3">
+                            <button onclick="window.editPlayer('${player.id}')" class="text-blue-600 hover:text-blue-800 mr-3">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deletePlayer('${player.id}', '${player.name}')" class="text-red-600 hover:text-red-800">
+                            <button onclick="window.deletePlayer('${player.id}', '${player.name}')" class="text-red-600 hover:text-red-800">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -944,7 +862,7 @@
         }
     }
 
-    window.editPlayer = async function(id) {
+    window.editPlayer = async (id) => {
         const player = allPlayers.find(p => p.id === id);
         if (!player) return;
         
@@ -956,13 +874,11 @@
         document.getElementById('player-image').value = player.image || '';
         document.getElementById('player-role').value = player.role || '';
         
-        document.getElementById('player-form-title').textContent = 'Edit Player';
-        document.getElementById('player-form-btn-text').textContent = 'Update Player';
-        document.getElementById('player-form-container').classList.remove('hidden');
+        window.showAddPlayerForm('Edit Player', 'Update Player');
     };
 
-    window.deletePlayer = function(id, name) {
-        showConfirmation('Delete Player', `Are you sure you want to delete ${name}?`, async () => {
+    window.deletePlayer = (id, name) => {
+        window.showConfirmation('Delete Player', `Are you sure you want to delete ${name}?`, async () => {
             try {
                 await deleteDoc(doc(db, 'players', id));
                 await logActivity('Deleted Player', `Deleted player ${name}`);
@@ -975,10 +891,9 @@
         });
     };
 
-    const playerForm = document.getElementById('player-form');
-    playerForm.addEventListener('submit', async (e) => {
+    document.getElementById('player-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('player-form');
+        window.showLoading('player-form');
         
         try {
             const id = document.getElementById('player-id').value;
@@ -1001,50 +916,18 @@
                 alert('Player added successfully!');
             }
             
-            playerForm.reset();
-            hidePlayerForm();
+            e.target.reset();
+            window.hidePlayerForm();
             loadPlayers();
         } catch (e) {
             console.error('Error saving player:', e);
             alert('Error saving player: ' + e.message);
         } finally {
-            hideLoading('player-form', id ? 'Update Player' : 'Add Player');
+            window.hideLoading('player-form', id ? 'Update Player' : 'Add Player');
         }
     });
 
-    // Coach Form Handling
-    const coachForm = document.getElementById('coach-form');
-    let coachBadges = [];
-
-    function renderCoachBadges() {
-        const container = document.getElementById('coach-badges-container');
-        container.innerHTML = '';
-        coachBadges.forEach((badge, index) => {
-            container.innerHTML += `
-                <div class="badge-input-container">
-                    <input type="text" value="${badge}" class="w-full px-4 py-2 border border-gray-300 rounded-md" readonly>
-                    <button type="button" onclick="removeCoachBadge(${index})" class="text-red-600 hover:text-red-800">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-        });
-    }
-
-    window.addCoachBadge = function() {
-        const newBadge = document.getElementById('new-badge').value.trim();
-        if (newBadge && !coachBadges.includes(newBadge)) {
-            coachBadges.push(newBadge);
-            renderCoachBadges();
-            document.getElementById('new-badge').value = '';
-        }
-    };
-
-    window.removeCoachBadge = function(index) {
-        coachBadges.splice(index, 1);
-        renderCoachBadges();
-    };
-
+    // Coach
     async function loadCoach() {
         try {
             const coachDoc = await getDoc(doc(db, 'coach', 'current'));
@@ -1054,16 +937,16 @@
                 document.getElementById('coach-image').value = coach.image || '';
                 document.getElementById('coach-speech').value = coach.speech || '';
                 coachBadges = coach.badges || [];
-                renderCoachBadges();
+                window.renderCoachBadges(coachBadges);
             }
         } catch (e) {
             console.error('Error loading coach:', e);
         }
     }
 
-    coachForm.addEventListener('submit', async (e) => {
+    document.getElementById('coach-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('coach-form');
+        window.showLoading('coach-form');
         
         try {
             const coachData = {
@@ -1080,28 +963,11 @@
             console.error('Error saving coach:', e);
             alert('Error saving coach: ' + e.message);
         } finally {
-            hideLoading('coach-form', 'Update Coach');
+            window.hideLoading('coach-form', 'Update Coach');
         }
     });
 
-    // News Management
-    function showAddNewsForm() {
-        const formContainer = document.getElementById('news-form-container');
-        const formTitle = document.getElementById('news-form-title');
-        const form = document.getElementById('news-form');
-        const btnText = document.getElementById('news-form-btn-text');
-        
-        formTitle.textContent = 'Add News';
-        btnText.textContent = 'Add News';
-        form.reset();
-        document.getElementById('news-id').value = '';
-        formContainer.classList.remove('hidden');
-    }
-
-    function hideNewsForm() {
-        document.getElementById('news-form-container').classList.add('hidden');
-    }
-
+    // News
     async function loadNews() {
         const newsList = document.getElementById('news-list');
         newsList.innerHTML = '';
@@ -1110,42 +976,14 @@
             const newsQuery = query(collection(db, 'news'), orderBy('date', 'desc'));
             const snapshot = await getDocs(newsQuery);
             allNews = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderNews(allNews);
+            window.renderNews(allNews);
         } catch (e) {
             console.error('Error loading news:', e);
             newsList.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Error loading news.</td></tr>';
         }
     }
 
-    function renderNews(newsItems) {
-        const newsList = document.getElementById('news-list');
-        newsList.innerHTML = '';
-        
-        if (newsItems.length === 0) {
-            newsList.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No news found.</td></tr>';
-            return;
-        }
-        
-        newsItems.forEach(news => {
-            newsList.innerHTML += `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">${news.title}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${news.category}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${news.date.toDate().toLocaleDateString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                        <button onclick="editNews('${news.id}')" class="text-blue-600 hover:text-blue-800 mr-3">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="deleteNews('${news.id}', '${news.title}')" class="text-red-600 hover:text-red-800">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    window.editNews = async function(id) {
+    window.editNews = async (id) => {
         const news = allNews.find(n => n.id === id);
         if (!news) return;
         
@@ -1155,13 +993,11 @@
         document.getElementById('news-image').value = news.image || '';
         document.getElementById('news-content').value = news.content;
         
-        document.getElementById('news-form-title').textContent = 'Edit News';
-        document.getElementById('news-form-btn-text').textContent = 'Update News';
-        document.getElementById('news-form-container').classList.remove('hidden');
+        window.showAddNewsForm('Edit News', 'Update News');
     };
 
-    window.deleteNews = function(id, title) {
-        showConfirmation('Delete News', `Are you sure you want to delete "${title}"?`, async () => {
+    window.deleteNews = (id, title) => {
+        window.showConfirmation('Delete News', `Are you sure you want to delete "${title}"?`, async () => {
             try {
                 await deleteDoc(doc(db, 'news', id));
                 await logActivity('Deleted News', `Deleted news "${title}"`);
@@ -1174,10 +1010,9 @@
         });
     };
 
-    const newsForm = document.getElementById('news-form');
-    newsForm.addEventListener('submit', async (e) => {
+    document.getElementById('news-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('news-form');
+        window.showLoading('news-form');
         
         try {
             const id = document.getElementById('news-id').value;
@@ -1199,53 +1034,18 @@
                 alert('News added successfully!');
             }
             
-            newsForm.reset();
-            hideNewsForm();
+            e.target.reset();
+            window.hideNewsForm();
             loadNews();
         } catch (e) {
             console.error('Error saving news:', e);
             alert('Error saving news: ' + e.message);
         } finally {
-            hideLoading('news-form', id ? 'Update News' : 'Add News');
+            window.hideLoading('news-form', id ? 'Update News' : 'Add News');
         }
     });
 
-    // News search and filter
-    document.getElementById('news-search').addEventListener('input', filterNews);
-    document.getElementById('news-filter').addEventListener('change', filterNews);
-
-    function filterNews() {
-        const search = document.getElementById('news-search').value.toLowerCase();
-        const category = document.getElementById('news-filter').value;
-        
-        const filteredNews = allNews.filter(news => 
-            news.title.toLowerCase().includes(search) &&
-            (category ? news.category === category : true)
-        );
-        
-        renderNews(filteredNews);
-    }
-
-    // Gallery Management
-    function showAddGalleryForm() {
-        const formContainer = document.getElementById('gallery-form-container');
-        const formTitle = document.getElementById('gallery-form-title');
-        const form = document.getElementById('gallery-form');
-        const btnText = document.getElementById('gallery-form-btn-text');
-        const preview = document.getElementById('gallery-preview');
-        
-        formTitle.textContent = 'Add Image to Gallery';
-        btnText.textContent = 'Add Image';
-        form.reset();
-        document.getElementById('gallery-id').value = '';
-        preview.src = '';
-        formContainer.classList.remove('hidden');
-    }
-
-    function hideGalleryForm() {
-        document.getElementById('gallery-form-container').classList.add('hidden');
-    }
-
+    // Gallery
     async function loadGallery() {
         const galleryList = document.getElementById('gallery-list');
         galleryList.innerHTML = '';
@@ -1268,10 +1068,10 @@
                             <p class="text-sm truncate">${item.description}</p>
                         </div>
                         <div class="absolute top-2 right-2 space-x-2">
-                            <button onclick="editGallery('${item.id}')" class="text-blue-400 hover:text-blue-600">
+                            <button onclick="window.editGallery('${item.id}')" class="text-blue-400 hover:text-blue-600">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deleteGallery('${item.id}', '${item.description}')" class="text-red-400 hover:text-red-600">
+                            <button onclick="window.deleteGallery('${item.id}', '${item.description}')" class="text-red-400 hover:text-red-600">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -1284,7 +1084,7 @@
         }
     }
 
-    window.editGallery = async function(id) {
+    window.editGallery = async (id) => {
         const item = allGallery.find(g => g.id === id);
         if (!item) return;
         
@@ -1293,13 +1093,11 @@
         document.getElementById('gallery-description').value = item.description;
         document.getElementById('gallery-preview').src = item.image || '';
         
-        document.getElementById('gallery-form-title').textContent = 'Edit Gallery Image';
-        document.getElementById('gallery-form-btn-text').textContent = 'Update Image';
-        document.getElementById('gallery-form-container').classList.remove('hidden');
+        window.showAddGalleryForm('Edit Gallery Image', 'Update Image');
     };
 
-    window.deleteGallery = function(id, description) {
-        showConfirmation('Delete Gallery Image', `Are you sure you want to delete "${description}"?`, async () => {
+    window.deleteGallery = (id, description) => {
+        window.showConfirmation('Delete Gallery Image', `Are you sure you want to delete "${description}"?`, async () => {
             try {
                 await deleteDoc(doc(db, 'gallery', id));
                 await logActivity('Deleted Gallery Image', `Deleted image "${description}"`);
@@ -1312,14 +1110,9 @@
         });
     };
 
-    const galleryForm = document.getElementById('gallery-form');
-    document.getElementById('gallery-image').addEventListener('input', (e) => {
-        document.getElementById('gallery-preview').src = e.target.value || '';
-    });
-
-    galleryForm.addEventListener('submit', async (e) => {
+    document.getElementById('gallery-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('gallery-form');
+        window.showLoading('gallery-form');
         
         try {
             const id = document.getElementById('gallery-id').value;
@@ -1338,38 +1131,19 @@
                 alert('Gallery image added successfully!');
             }
             
-            galleryForm.reset();
+            e.target.reset();
             document.getElementById('gallery-preview').src = '';
-            hideGalleryForm();
+            window.hideGalleryForm();
             loadGallery();
         } catch (e) {
             console.error('Error saving gallery image:', e);
             alert('Error saving gallery image: ' + e.message);
         } finally {
-            hideLoading('gallery-form', id ? 'Update Image' : 'Add Image');
+            window.hideLoading('gallery-form', id ? 'Update Image' : 'Add Image');
         }
     });
 
-    // Sponsors Management
-    function showAddSponsorForm() {
-        const formContainer = document.getElementById('sponsor-form-container');
-        const formTitle = document.getElementById('sponsor-form-title');
-        const form = document.getElementById('sponsor-form');
-        const btnText = document.getElementById('sponsor-form-btn-text');
-        const preview = document.getElementById('sponsor-preview');
-        
-        formTitle.textContent = 'Add Sponsor';
-        btnText.textContent = 'Add Sponsor';
-        form.reset();
-        document.getElementById('sponsor-id').value = '';
-        preview.src = '';
-        formContainer.classList.remove('hidden');
-    }
-
-    function hideSponsorForm() {
-        document.getElementById('sponsor-form-container').classList.add('hidden');
-    }
-
+    // Sponsors
     async function loadSponsors() {
         const sponsorsList = document.getElementById('sponsors-list');
         sponsorsList.innerHTML = '';
@@ -1390,10 +1164,10 @@
                         <img src="${sponsor.image || 'https://via.placeholder.com/150x50'}" alt="${sponsor.name}" class="h-16 mx-auto object-contain">
                         <p class="text-center mt-2 text-sm font-medium">${sponsor.name}</p>
                         <div class="absolute top-2 right-2 space-x-2">
-                            <button onclick="editSponsor('${sponsor.id}')" class="text-blue-400 hover:text-blue-600">
+                            <button onclick="window.editSponsor('${sponsor.id}')" class="text-blue-400 hover:text-blue-600">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deleteSponsor('${sponsor.id}', '${sponsor.name}')" class="text-red-400 hover:text-red-600">
+                            <button onclick="window.deleteSponsor('${sponsor.id}', '${sponsor.name}')" class="text-red-400 hover:text-red-600">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -1406,7 +1180,7 @@
         }
     }
 
-    window.editSponsor = async function(id) {
+    window.editSponsor = async (id) => {
         const sponsor = allSponsors.find(s => s.id === id);
         if (!sponsor) return;
         
@@ -1415,13 +1189,11 @@
         document.getElementById('sponsor-image').value = sponsor.image;
         document.getElementById('sponsor-preview').src = sponsor.image || '';
         
-        document.getElementById('sponsor-form-title').textContent = 'Edit Sponsor';
-        document.getElementById('sponsor-form-btn-text').textContent = 'Update Sponsor';
-        document.getElementById('sponsor-form-container').classList.remove('hidden');
+        window.showAddSponsorForm('Edit Sponsor', 'Update Sponsor');
     };
 
-    window.deleteSponsor = function(id, name) {
-        showConfirmation('Delete Sponsor', `Are you sure you want to delete "${name}"?`, async () => {
+    window.deleteSponsor = (id, name) => {
+        window.showConfirmation('Delete Sponsor', `Are you sure you want to delete "${name}"?`, async () => {
             try {
                 await deleteDoc(doc(db, 'sponsors', id));
                 await logActivity('Deleted Sponsor', `Deleted sponsor "${name}"`);
@@ -1434,14 +1206,9 @@
         });
     };
 
-    const sponsorForm = document.getElementById('sponsor-form');
-    document.getElementById('sponsor-image').addEventListener('input', (e) => {
-        document.getElementById('sponsor-preview').src = e.target.value || '';
-    });
-
-    sponsorForm.addEventListener('submit', async (e) => {
+    document.getElementById('sponsor-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('sponsor-form');
+        window.showLoading('sponsor-form');
         
         try {
             const id = document.getElementById('sponsor-id').value;
@@ -1460,19 +1227,19 @@
                 alert('Sponsor added successfully!');
             }
             
-            sponsorForm.reset();
+            e.target.reset();
             document.getElementById('sponsor-preview').src = '';
-            hideSponsorForm();
+            window.hideSponsorForm();
             loadSponsors();
         } catch (e) {
             console.error('Error saving sponsor:', e);
             alert('Error saving sponsor: ' + e.message);
         } finally {
-            hideLoading('sponsor-form', id ? 'Update Sponsor' : 'Add Sponsor');
+            window.hideLoading('sponsor-form', id ? 'Update Sponsor' : 'Add Sponsor');
         }
     });
 
-    // Settings Management
+    // Settings
     async function loadSettings() {
         try {
             const settingsDoc = await getDoc(doc(db, 'settings', 'current'));
@@ -1491,10 +1258,9 @@
         }
     }
 
-    const socialForm = document.getElementById('social-form');
-    socialForm.addEventListener('submit', async (e) => {
+    document.getElementById('social-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('social-form');
+        window.showLoading('social-form');
         
         try {
             const socialData = {
@@ -1512,14 +1278,13 @@
             console.error('Error saving social links:', e);
             alert('Error saving social links: ' + e.message);
         } finally {
-            hideLoading('social-form', 'Update Social Links');
+            window.hideLoading('social-form', 'Update Social Links');
         }
     });
 
-    const clubInfoForm = document.getElementById('club-info-form');
-    clubInfoForm.addEventListener('submit', async (e) => {
+    document.getElementById('club-info-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        showLoading('club-info-form');
+        window.showLoading('club-info-form');
         
         try {
             const clubInfoData = {
@@ -1534,13 +1299,12 @@
             console.error('Error saving club info:', e);
             alert('Error saving club info: ' + e.message);
         } finally {
-            hideLoading('club-info-form', 'Update Club Info');
+            window.hideLoading('club-info-form', 'Update Club Info');
         }
     });
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
-        showTab('dashboard');
         loadDashboard();
         loadPlayers();
         loadCoach();
@@ -1548,6 +1312,202 @@
         loadGallery();
         loadSponsors();
         loadSettings();
+    });
+</script>
+
+<!-- Normal Script for UI Interactions -->
+<script>
+    // UI Elements
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+    const modal = document.getElementById('confirmation-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalConfirm = document.getElementById('modal-confirm');
+
+    // Global variables
+    let pendingAction = null;
+
+    // Sidebar toggle
+    toggleSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('expanded');
+        toggleSidebarBtn.innerHTML = sidebar.classList.contains('collapsed') ? 
+            '<i class="fas fa-chevron-right"></i>' : '<i class="fas fa-chevron-left"></i>';
+    });
+
+    // Modal functions
+    window.showConfirmation = (title, message, onConfirm) => {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modal.classList.remove('hidden');
+        pendingAction = onConfirm;
+    };
+
+    modalCancel.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        pendingAction = null;
+    });
+
+    modalConfirm.addEventListener('click', () => {
+        if (pendingAction) pendingAction();
+        modal.classList.add('hidden');
+        pendingAction = null;
+    });
+
+    // Tab navigation
+    window.showTab = (tabName) => {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+        document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+    };
+
+    // Loading spinner
+    window.showLoading = (buttonId) => {
+        const btnText = document.getElementById(`${buttonId}-btn-text`);
+        const spinner = document.getElementById(`${buttonId}-spinner`);
+        if (btnText) btnText.textContent = buttonId.includes('form') ? 'Saving...' : 'Processing...';
+        if (spinner) spinner.classList.remove('hidden');
+    };
+
+    window.hideLoading = (buttonId, resetText) => {
+        const btnText = document.getElementById(`${buttonId}-btn-text`);
+        const spinner = document.getElementById(`${buttonId}-spinner`);
+        if (btnText) btnText.textContent = resetText;
+        if (spinner) spinner.classList.add('hidden');
+    };
+
+    // Player form
+    window.showAddPlayerForm = (title = 'Add New Player', btnText = 'Add Player') => {
+        const formContainer = document.getElementById('player-form-container');
+        document.getElementById('player-form-title').textContent = title;
+        document.getElementById('player-form-btn-text').textContent = btnText;
+        formContainer.classList.remove('hidden');
+    };
+
+    window.hidePlayerForm = () => {
+        document.getElementById('player-form-container').classList.add('hidden');
+    };
+
+    // Coach badges
+    window.renderCoachBadges = (badges) => {
+        const container = document.getElementById('coach-badges-container');
+        container.innerHTML = '';
+        badges.forEach((badge, index) => {
+            container.innerHTML += `
+                <div class="badge-input-container">
+                    <input type="text" value="${badge}" class="w-full px-4 py-2 border border-gray-300 rounded-md" readonly>
+                    <button type="button" onclick="window.removeCoachBadge(${index})" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+        });
+    };
+
+    window.addCoachBadge = () => {
+        const newBadge = document.getElementById('new-badge').value.trim();
+        if (newBadge) {
+            window.renderCoachBadges([...document.querySelectorAll('#coach-badges-container input').values().map(input => input.value), newBadge]);
+            document.getElementById('new-badge').value = '';
+        }
+    };
+
+    window.removeCoachBadge = (index) => {
+        const badges = Array.from(document.querySelectorAll('#coach-badges-container input')).map(input => input.value);
+        badges.splice(index, 1);
+        window.renderCoachBadges(badges);
+    };
+
+    // News form
+    window.showAddNewsForm = (title = 'Add News', btnText = 'Add News') => {
+        const formContainer = document.getElementById('news-form-container');
+        document.getElementById('news-form-title').textContent = title;
+        document.getElementById('news-form-btn-text').textContent = btnText;
+        formContainer.classList.remove('hidden');
+    };
+
+    window.hideNewsForm = () => {
+        document.getElementById('news-form-container').classList.add('hidden');
+    };
+
+    window.renderNews = (newsItems) => {
+        const newsList = document.getElementById('news-list');
+        newsList.innerHTML = newsItems.length === 0 ? '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No news found.</td></tr>' : '';
+        
+        newsItems.forEach(news => {
+            newsList.innerHTML += `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">${news.title}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${news.category}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${news.date.toDate().toLocaleDateString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                        <button onclick="window.editNews('${news.id}')" class="text-blue-600 hover:text-blue-800 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="window.deleteNews('${news.id}', '${news.title}')" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    };
+
+    document.getElementById('news-search').addEventListener('input', () => window.filterNews());
+    document.getElementById('news-filter').addEventListener('change', () => window.filterNews());
+
+    window.filterNews = () => {
+        const search = document.getElementById('news-search').value.toLowerCase();
+        const category = document.getElementById('news-filter').value;
+        const newsList = document.getElementById('news-list');
+        const rows = newsList.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+            const title = row.cells[0]?.textContent.toLowerCase() || '';
+            const rowCategory = row.cells[1]?.textContent || '';
+            const matchesSearch = title.includes(search);
+            const matchesCategory = !category || rowCategory === category;
+            row.style.display = matchesSearch && matchesCategory ? '' : 'none';
+        });
+    };
+
+    // Gallery form
+    window.showAddGalleryForm = (title = 'Add Image to Gallery', btnText = 'Add Image') => {
+        const formContainer = document.getElementById('gallery-form-container');
+        document.getElementById('gallery-form-title').textContent = title;
+        document.getElementById('gallery-form-btn-text').textContent = btnText;
+        formContainer.classList.remove('hidden');
+    };
+
+    window.hideGalleryForm = () => {
+        document.getElementById('gallery-form-container').classList.add('hidden');
+    };
+
+    document.getElementById('gallery-image').addEventListener('input', (e) => {
+        document.getElementById('gallery-preview').src = e.target.value || '';
+    });
+
+    // Sponsor form
+    window.showAddSponsorForm = (title = 'Add Sponsor', btnText = 'Add Sponsor') => {
+        const formContainer = document.getElementById('sponsor-form-container');
+        document.getElementById('sponsor-form-title').textContent = title;
+        document.getElementById('sponsor-form-btn-text').textContent = btnText;
+        formContainer.classList.remove('hidden');
+    };
+
+    window.hideSponsorForm = () => {
+        document.getElementById('sponsor-form-container').classList.add('hidden');
+    };
+
+    document.getElementById('sponsor-image').addEventListener('input', (e) => {
+        document.getElementById('sponsor-preview').src = e.target.value || '';
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        window.showTab('dashboard');
     });
 </script>
 </body>
