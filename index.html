@@ -95,12 +95,9 @@
                     <span class="text-xl font-bold hidden md:block">AIME BASKETBALL TEAM</span>
                 </a>
                 <div class="hidden md:flex space-x-6">
-                    <a href="#home" class="hover:text-accent transition duration-300 font-medium">HOME</a>
                     <a href="#news" class="hover:text-accent transition duration-300 font-medium">NEWS</a>
                     <a href="#team" class="hover:text-accent transition duration-300 font-medium">OUR TEAM</a>
-                    <a href="#schedule" class="hover:text-accent transition duration-300 font-medium">SCHEDULE</a>
                     <a href="#gallery" class="hover:text-accent transition duration-300 font-medium">GALLERY</a>
-                    <a href="#contact" class="hover:text-accent transition duration-300 font-medium">CONTACT</a>
                 </div>
                 <button id="mobile-menu-toggle" class="md:hidden text-white focus:outline-none" aria-label="Toggle mobile menu">
                     <i class="fas fa-bars text-2xl"></i>
@@ -110,12 +107,9 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="mobile-menu md:hidden bg-secondary text-white fixed top-20 right-0 w-3/4 h-full shadow-lg">
             <div class="flex flex-col p-4 space-y-4">
-                <a href="#home" class="text-lg font-medium hover:text-accent transition duration-300">HOME</a>
                 <a href="#news" class="text-lg font-medium hover:text-accent transition duration-300">NEWS</a>
                 <a href="#team" class="text-lg font-medium hover:text-accent transition duration-300">OUR TEAM</a>
-                <a href="#schedule" class="text-lg font-medium hover:text-accent transition duration-300">SCHEDULE</a>
                 <a href="#gallery" class="text-lg font-medium hover:text-accent transition duration-300">GALLERY</a>
-                <a href="#contact" class="text-lg font-medium hover:text-accent transition duration-300">CONTACT</a>
             </div>
         </div>
     </nav>
@@ -145,7 +139,7 @@
                 </div>
                 <div class="md:w-1/2 flex justify-center">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Team Photo" class="rounded-lg shadow-2xl border-4 border-accent max-w-full h-auto">
+<img src="https://i.ibb.co/TBdmrnNC/Screenshot-2025-06-06-195718.png" alt="Team Photo" class="rounded-lg shadow-2xl border-4 border-accent max-w-full h-auto">
                         <div class="absolute -top-4 -right-4 bg-secondary text-white px-3 py-1 rounded-full shadow-md animate-bounce-custom">
                             <i class="fas fa-trophy mr-1"></i> 2023 Champions
                         </div>
@@ -408,23 +402,26 @@
         </div>
     </footer>
     <script type="module">
+   <script type="module">
     // Import Firebase SDK
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
-    import { getFirestore, collection, getDocs, addDoc, orderBy, query, limit, serverTimestamp, getDoc, doc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js';
+    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-analytics.js';
+    import { getFirestore, collection, getDocs, addDoc, orderBy, query, limit, serverTimestamp, getDoc, doc } from 'https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js';
 
-    // Firebase configuration (replace apiKey and appId with actual values)
+    // Firebase configuration
     const firebaseConfig = {
-        apiKey: "YOUR_ACTUAL_API_KEY", // Replace with your Firebase project's apiKey
-        authDomain: "joefootball-15e7a.firebaseapp.com",
-        projectId: "joefootball-15e7a",
-        storageBucket: "joefootball-15e7a.appspot.com",
-        messagingSenderId: "976347287101",
-        appId: "YOUR_ACTUAL_APP_ID", // Replace with your Firebase project's appId
-        measurementId: "G-9ZD2Y7CK35Z"
+        apiKey: "AIzaSyBgPFieysdvDl_Fx4nSZ95C25W7Wd6Xj7k",
+        authDomain: "aimebasketball.firebaseapp.com",
+        projectId: "aimebasketball",
+        storageBucket: "aimebasketball.firebasestorage.app",
+        messagingSenderId: "864360532917",
+        appId: "1:864360532917:web:20a58e013f14e44230a7fc",
+        measurementId: "G-1QQ68RF7G9"
     };
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
     // Show loading spinner
@@ -811,6 +808,7 @@
             });
         });
     });
+</script>
 </script>
 </body>
 </html>
