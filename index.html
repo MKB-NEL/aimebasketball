@@ -88,7 +88,7 @@
     <nav id="navbar" class="fixed w-full bg-secondary text-white z-50 transition-shadow">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-20">
-                <a href="index.html" class="flex items-center space-x-2" aria-label="AIME Basketball Team">
+                <a href="admin.html" class="flex items-center space-x-2" aria-label="AIME Basketball Team Admin">
                     <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                         <i class="fas fa-basketball-hoop hoop-icon text-xl"></i>
                     </div>
@@ -262,19 +262,15 @@
                 <div class="bg-gray-100 rounded-xl p-6 max-w-4xl mx-auto shadow-md">
                     <div class="flex flex-col md:flex-row items-center">
                         <div class="md:w-1/3 mb-6 md:mb-0 flex justify-center">
-                            <img id="coach-image" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Head Coach" class="rounded-lg shadow-md w-48 h-64 object-cover">
+                            <img id="coach-image" src="https://via.placeholder.com/300x400?text=Coach" alt="Head Coach" class="rounded-lg shadow-md w-48 h-64 object-cover">
                         </div>
                         <div class="md:w-2/3 md:pl-8 text-center md:text-left">
                             <div class="text-sm text-primary font-bold mb-2 uppercase">HEAD COACH</div>
-                            <h3 id="coach-name" class="text-2xl font-bold mb-2">James Davidson</h3>
+                            <h3 id="coach-name" class="text-2xl font-bold mb-2">Loading...</h3>
                             <div id="coach-badges" class="flex flex-wrap gap-2 mb-4">
-                                <span class="text-xs bg-accent text-secondary px-2 py-1 rounded">15+ Years Experience</span>
-                                <span class="text-xs bg-primary text-white px-2 py-1 rounded">2x Championship Winner</span>
-                                <span class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded">Former NBA Assistant</span>
+                                <span class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded">Loading...</span>
                             </div>
-                            <p id="coach-speech" class="text-gray-600 mb-4">
-                                "Our philosophy is simple: outwork, outthink, outperform. Every practice, every game, every moment is an opportunity to improve. The journey to greatness is built on discipline, teamwork, and relentless effort."
-                            </p>
+                            <p id="coach-speech" class="text-gray-600 mb-4">Loading...</p>
                         </div>
                     </div>
                 </div>
@@ -407,127 +403,72 @@
                 </div>
             </div>
             <div class="pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
-                <p>© 2023 AIME Basketball Team. All rights reserved. | Designed with <i class="fas fa-heart text-primary mx-1"></i> by ABT Digital Team</p>
+                <p>© 2025 Made by M.K.Bertrand</p>
             </div>
         </div>
     </footer>
-
     <script type="module">
-        // Sample data - In a real app, this would come from a database
-        const samplePlayers = [
-            {
-                number: 7,
-                name: "Michael Jordan",
-                position: "Guard",
-                image: "https://images.unsplash.com/photo-1593998066526-65d23e43bb1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                nationality: "USA",
-                role: "Captain"
-            },
-            {
-                number: 23,
-                name: "LeBron James",
-                position: "Forward",
-                image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
-                nationality: "USA",
-                role: "Vice Captain"
-            },
-            {
-                number: 33,
-                name: "Larry Bird",
-                position: "Forward",
-                image: "https://images.unsplash.com/photo-1488048924544-8164e1300cb9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                nationality: "USA",
-                role: "Scorer"
-            },
-            {
-                number: 34,
-                name: "Shaquille O'Neal",
-                position: "Center",
-                image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                nationality: "USA",
-                role: "Rebounder"
-            },
-            {
-                number: 30,
-                name: "Stephen Curry",
-                position: "Guard",
-                image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
-                nationality: "USA",
-                role: "Shooter"
-            }
-        ];
+    // Import Firebase SDK
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+    import { getFirestore, collection, getDocs, addDoc, orderBy, query, limit, serverTimestamp, getDoc, doc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
 
-        const sampleNews = [
-            {
-                title: "Team Wins Championship",
-                content: "Our team has won the national championship with an outstanding performance throughout the season.",
-                image: "https://images.unsplash.com/photo-1516450360452-931d163bb593?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                category: "Match Report",
-                date: "2023-06-15"
-            },
-            {
-                title: "New Player Signing",
-                content: "We're excited to announce the signing of a top-tier player to strengthen our roster.",
-                image: "https://images.unsplash.com/photo-1548092372-44d6dd37dfa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-                category: "Transfer",
-                date: "2023-05-22"
-            },
-            {
-                title: "Youth Academy Launch",
-                content: "Our new youth academy program will start next month to develop young basketball talent.",
-                image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1029&q=80",
-                category: "Academy",
-                date: "2023-04-10"
-            }
-        ];
+    // Firebase configuration (replace apiKey and appId with actual values)
+    const firebaseConfig = {
+        apiKey: "YOUR_ACTUAL_API_KEY", // Replace with your Firebase project's apiKey
+        authDomain: "joefootball-15e7a.firebaseapp.com",
+        projectId: "joefootball-15e7a",
+        storageBucket: "joefootball-15e7a.appspot.com",
+        messagingSenderId: "976347287101",
+        appId: "YOUR_ACTUAL_APP_ID", // Replace with your Firebase project's appId
+        measurementId: "G-9ZD2Y7CK35Z"
+    };
 
-        const sampleGames = [
-            { date: "2023-07-15", opponent: "City Rivals", location: "Home", time: "19:30", result: "W 98-85" },
-            { date: "2023-07-22", opponent: "State Champions", location: "Away", time: "20:00", result: "L 102-107" },
-            { date: "2023-08-05", opponent: "Metro Stars", location: "Away", time: "18:00", result: "W 112-95" },
-            { date: "2023-08-12", opponent: "Elite Team", location: "Home", time: "19:30", result: "W 89-78" },
-            { date: "2023-08-19", opponent: "Basketball Club", location: "Home", time: "17:00", result: "L 91-96" },
-            { date: "2023-08-26", opponent: "Golden Players", location: "Away", time: "20:00", result: "-" }
-        ];
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // Show loading spinner
-        function showLoading(button) {
-            button.classList.add('loading');
-            button.disabled = true;
+    // Show loading spinner
+    function showLoading(button) {
+        button.classList.add('loading');
+        button.disabled = true;
+    }
+
+    // Hide loading spinner
+    function hideLoading(button) {
+        button.classList.remove('loading');
+        button.disabled = false;
+    }
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('open');
+        mobileMenuToggle.querySelector('i').classList.toggle('fa-bars');
+        mobileMenuToggle.querySelector('i').classList.toggle('fa-times');
+    });
+
+    // Sticky navbar on scroll
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('sticky-nav');
+        } else {
+            navbar.classList.remove('sticky-nav');
         }
+    });
 
-        // Hide loading spinner
-        function hideLoading(button) {
-            button.classList.remove('loading');
-            button.disabled = false;
-        }
+    // Load players
+    async function loadPlayers(filter = 'all') {
+        const container = document.getElementById('players-container');
+        container.innerHTML = '';
+        try {
+            const playersQuery = query(collection(db, 'players'), orderBy('number', 'asc'));
+            const snapshot = await getDocs(playersQuery);
+            const players = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // Mobile menu toggle
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
-            mobileMenuToggle.querySelector('i').classList.toggle('fa-bars');
-            mobileMenuToggle.querySelector('i').classList.toggle('fa-times');
-        });
-
-        // Sticky navbar on scroll
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('sticky-nav');
-            } else {
-                navbar.classList.remove('sticky-nav');
-            }
-        });
-
-        // Load players
-        function loadPlayers(filter = 'all') {
-            const container = document.getElementById('players-container');
-            container.innerHTML = '';
-            
-            const filteredPlayers = filter === 'all' ? samplePlayers : 
-                samplePlayers.filter(player => player.position === filter);
+            const filteredPlayers = filter === 'all' ? players : 
+                players.filter(player => player.position === filter);
 
             if (filteredPlayers.length === 0) {
                 container.innerHTML = '<p class="col-span-full text-center text-gray-600">No players found for this position.</p>';
@@ -554,39 +495,54 @@
                     </div>
                 `;
             });
+        } catch (e) {
+            console.error('Error loading players:', e);
+            container.innerHTML = '<p class="col-span-full text-center text-gray-600">Error loading players.</p>';
+        } finally {
+            container.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
         }
+    }
 
-        // Filter players
-        window.filterPlayers = function(position) {
-            loadPlayers(position);
-            document.querySelectorAll('#team button').forEach(btn => {
-                btn.classList.remove('bg-primary', 'text-white');
-                btn.classList.add('bg-gray-100', 'text-gray-800');
-                if (btn.textContent.toLowerCase() === position.toLowerCase() || (position === 'all' && btn.textContent === 'ALL')) {
-                    btn.classList.add('bg-primary', 'text-white');
-                    btn.classList.remove('bg-gray-100', 'text-gray-800');
-                }
-            });
-        };
+    // Filter players
+    window.filterPlayers = function(position) {
+        loadPlayers(position);
+        document.querySelectorAll('#team button').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white');
+            btn.classList.add('bg-gray-100', 'text-gray-800');
+            if (btn.textContent.toLowerCase() === position.toLowerCase() || (position === 'all' && btn.textContent === 'ALL')) {
+                btn.classList.add('bg-primary', 'text-white');
+                btn.classList.remove('bg-gray-100', 'text-gray-800');
+            }
+        });
+    };
 
-        // Load news
-        function loadNews() {
-            const container = document.getElementById('news-container');
-            container.innerHTML = '';
-            
-            sampleNews.forEach(news => {
+    // Load news
+    async function loadNews() {
+        const container = document.getElementById('news-container');
+        container.innerHTML = '';
+        try {
+            const newsQuery = query(collection(db, 'news'), orderBy('date', 'desc'), limit(3));
+            const snapshot = await getDocs(newsQuery);
+            const news = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            if (news.length === 0) {
+                container.innerHTML = '<p class="col-span-full text-center text-gray-600">No news available.</p>';
+                return;
+            }
+
+            news.forEach(item => {
                 container.innerHTML += `
                     <div class="bg-white rounded-lg overflow-hidden shadow-md news-card hover:shadow-lg transition duration-300" tabindex="0">
                         <div class="relative overflow-hidden h-56">
-                            <img src="${news.image || 'https://via.placeholder.com/600x400?text=News'}" alt="${news.title}" class="w-full h-full object-cover">
-                            <div class="absolute top-4 left-4 ${news.category === 'Match Report' ? 'bg-primary' : news.category === 'Transfer' ? 'bg-accent' : 'bg-gray-500'} text-white px-3 py-1 rounded-md text-sm font-bold">
-                                ${news.category || 'General'}
+                            <img src="${item.image || 'https://via.placeholder.com/600x400?text=News'}" alt="${item.title}" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4 ${item.category === 'Match Report' ? 'bg-primary' : item.category === 'Transfer' ? 'bg-accent' : 'bg-gray-500'} text-white px-3 py-1 rounded-md text-sm font-bold">
+                                ${item.category || 'General'}
                             </div>
                         </div>
                         <div class="p-4">
-                            <div class="text-xs text-gray-500 mb-2">${new Date(news.date).toLocaleDateString()}</div>
-                            <h3 class="text-lg font-bold mb-2">${news.title}</h3>
-                            <p class="text-gray-600 text-sm">${news.content.substring(0, 100)}...</p>
+                            <div class="text-xs text-gray-500 mb-2">${item.date.toDate().toLocaleDateString()}</div>
+                            <h3 class="text-lg font-bold mb-2">${item.title}</h3>
+                            <p class="text-gray-600 text-sm">${item.content.substring(0, 100)}...</p>
                             <a href="#" class="mt-3 inline-block text-sm font-medium text-primary hover:text-red-700">
                                 Read More <i class="fas fa-chevron-right ml-1"></i>
                             </a>
@@ -594,18 +550,33 @@
                     </div>
                 `;
             });
+        } catch (e) {
+            console.error('Error loading news:', e);
+            container.innerHTML = '<p class="col-span-full text-center text-gray-600">Error loading news.</p>';
+        } finally {
+            container.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
         }
+    }
 
-        // Load schedule
-        function loadSchedule() {
-            const table = document.getElementById('schedule-table');
-            table.innerHTML = '';
-            
-            sampleGames.forEach(game => {
+    // Load schedule
+    async function loadSchedule() {
+        const table = document.getElementById('schedule-table');
+        table.innerHTML = '';
+        try {
+            const gamesQuery = query(collection(db, 'games'), orderBy('date', 'asc'));
+            const snapshot = await getDocs(gamesQuery);
+            const games = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            if (games.length === 0) {
+                table.innerHTML = '<tr><td colspan="5" class="py-4 px-6 text-center text-gray-500">No games scheduled.</td></tr>';
+                return;
+            }
+
+            games.forEach(game => {
                 const row = document.createElement('tr');
-                row.className = game.date < new Date().toISOString().split('T')[0] ? 'bg-gray-50' : 'bg-white hover:bg-gray-50';
+                row.className = game.date.toDate() < new Date() ? 'bg-gray-50' : 'bg-white hover:bg-gray-50';
                 row.innerHTML = `
-                    <td class="py-3 px-6 whitespace-nowrap">${new Date(game.date).toLocaleDateString()}</td>
+                    <td class="py-3 px-6 whitespace-nowrap">${game.date.toDate().toLocaleDateString()}</td>
                     <td class="py-3 px-6 whitespace-nowrap font-medium">${game.opponent}</td>
                     <td class="py-3 px-6 text-center whitespace-nowrap">${game.location}</td>
                     <td class="py-3 px-6 text-center whitespace-nowrap">${game.time}</td>
@@ -615,12 +586,26 @@
                 `;
                 table.appendChild(row);
             });
+        } catch (e) {
+            console.error('Error loading schedule:', e);
+            table.innerHTML = '<tr><td colspan="5" class="py-4 px-6 text-center text-gray-500">Error loading schedule.</td></tr>';
         }
+    }
 
-        // Load next game
-        function loadNextGame() {
-            const container = document.getElementById('next-game-container');
-            const nextGame = sampleGames.find(game => game.result === '-') || sampleGames[sampleGames.length - 1];
+    // Load next game
+    async function loadNextGame() {
+        const container = document.getElementById('next-game-container');
+        try {
+            const gamesQuery = query(collection(db, 'games'), orderBy('date', 'asc'));
+            const snapshot = await getDocs(gamesQuery);
+            const games = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const nextGame = games.find(game => game.result === '-') || games[games.length - 1];
+
+            if (!nextGame) {
+                container.innerHTML = '<p class="text-center text-gray-600">No upcoming games.</p>';
+                return;
+            }
+
             container.innerHTML = `
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
                     <div class="flex flex-col items-center">
@@ -634,132 +619,198 @@
                     </div>
                 </div>
                 <div class="text-lg text-gray-700 mb-2">${nextGame.location === 'Home' ? 'Home Game at ABT Arena' : 'Away Game'}</div>
-                <div class="text-md text-gray-600">${new Date(nextGame.date).toLocaleDateString()} at ${nextGame.time}</div>
+                <div class="text-md text-gray-600">${nextGame.date.toDate().toLocaleDateString()} at ${nextGame.time}</div>
                 <div class="mt-4">
                     <button class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-md font-bold transition duration-300">
                         GET TICKETS
                     </button>
                 </div>
             `;
+        } catch (e) {
+            console.error('Error loading next game:', e);
+            container.innerHTML = '<p class="text-center text-gray-600">Error loading next game.</p>';
+        } finally {
             container.classList.remove('skeleton');
         }
+    }
 
-        // Load sponsors
-        function loadSponsors() {
-            const container = document.getElementById('sponsors-container');
-            container.innerHTML = '';
-            
-            const sponsors = [
-                { name: "Nike", image: "https://via.placeholder.com/150x50?text=Nike" },
-                { name: "Gatorade", image: "https://via.placeholder.com/150x50?text=Gatorade" },
-                { name: "Wilson", image: "https://via.placeholder.com/150x50?text=Wilson" },
-                { name: "Adidas", image: "https://via.placeholder.com/150x50?text=Adidas" },
-                { name: "Spalding", image: "https://via.placeholder.com/150x50?text=Spalding" }
-            ];
-            
+    // Load sponsors
+    async function loadSponsors() {
+        const container = document.getElementById('sponsors-container');
+        container.innerHTML = '';
+        try {
+            const sponsorsQuery = query(collection(db, 'sponsors'));
+            const snapshot = await getDocs(sponsorsQuery);
+            const sponsors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            if (sponsors.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-600">No sponsors available.</p>';
+                return;
+            }
+
             sponsors.forEach(sponsor => {
                 container.innerHTML += `
                     <div class="w-32 h-16 flex items-center justify-center">
-                        <img src="${sponsor.image}" alt="${sponsor.name}" class="max-w-full max-h-full object-contain">
+                        <img src="${sponsor.image || 'https://via.placeholder.com/150x50?text=Sponsor'}" alt="${sponsor.name}" class="max-w-full max-h-full object-contain">
                     </div>
                 `;
             });
+        } catch (e) {
+            console.error('Error loading sponsors:', e);
+            container.innerHTML = '<p class="text-center text-gray-600">Error loading sponsors.</p>';
+        } finally {
+            container.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
         }
+    }
 
-        // Load stats
-        function loadStats() {
-            document.getElementById('stats-games').textContent = '28';
-            document.getElementById('stats-wins').textContent = '22';
-            document.getElementById('stats-points').textContent = '98.7';
-            document.getElementById('stats-streak').textContent = '5';
+    // Load stats
+    async function loadStats() {
+        try {
+            const statsDoc = await getDoc(doc(db, 'stats', 'current'));
+            if (statsDoc.exists()) {
+                const stats = statsDoc.data();
+                document.getElementById('stats-games').textContent = stats.games || '-';
+                document.getElementById('stats-wins').textContent = stats.wins || '-';
+                document.getElementById('stats-points').textContent = stats.points || '-';
+                document.getElementById('stats-streak').textContent = stats.streak || '-';
+            } else {
+                console.warn('No stats data found.');
+            }
+        } catch (e) {
+            console.error('Error loading stats:', e);
         }
+    }
 
-        // Load gallery
-        function loadGallery() {
-            const container = document.getElementById('gallery-container');
-            container.innerHTML = '';
-            
-            const galleryImages = [
-                { image: "https://images.unsplash.com/photo-1543357480-c60d400e7ab6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80", description: "Championship Celebration" },
-                { image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80", description: "Coach Inspiring Team" },
-                { image: "https://images.unsplash.com/photo-1548092372-44d6dd37dfa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80", description: "Intense Game Action" }
-            ];
-            
-            galleryImages.forEach(item => {
+    // Load gallery
+    async function loadGallery() {
+        const container = document.getElementById('gallery-container');
+        container.innerHTML = '';
+        try {
+            const galleryQuery = query(collection(db, 'gallery'), limit(3));
+            const snapshot = await getDocs(galleryQuery);
+            const gallery = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            if (gallery.length === 0) {
+                container.innerHTML = '<p class="col-span-full text-center text-gray-600">No gallery images available.</p>';
+                return;
+            }
+
+            gallery.forEach(item => {
                 container.innerHTML += `
                     <div class="relative group overflow-hidden rounded-lg h-64 shadow-md">
-                        <img src="${item.image}" alt="${item.description}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                        <img src="${item.image || 'https://via.placeholder.com/600x400?text=Gallery'}" alt="${item.description}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
                             <span class="text-white font-bold text-lg text-center px-4">${item.description}</span>
                         </div>
                     </div>
                 `;
             });
+        } catch (e) {
+            console.error('Error loading gallery:', e);
+            container.innerHTML = '<p class="col-span-full text-center text-gray-600">Error loading gallery.</p>';
+        } finally {
+            container.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
+        }
+    }
+
+    // Load coach
+    async function loadCoach() {
+        try {
+            const coachDoc = await getDoc(doc(db, 'coach', 'current'));
+            if (coachDoc.exists()) {
+                const coach = coachDoc.data();
+                document.getElementById('coach-name').textContent = coach.name || 'Unknown';
+                document.getElementById('coach-image').src = coach.image || 'https://via.placeholder.com/300x400?text=Coach';
+                document.getElementById('coach-speech').textContent = coach.speech || 'No speech available.';
+                const badgesContainer = document.getElementById('coach-badges');
+                badgesContainer.innerHTML = '';
+                if (coach.badges && Array.isArray(coach.badges)) {
+                    coach.badges.forEach(badge => {
+                        badgesContainer.innerHTML += `<span class="text-xs bg-accent text-secondary px-2 py-1 rounded">${badge}</span>`;
+                    });
+                } else {
+                    badgesContainer.innerHTML = '<span class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded">No badges</span>';
+                }
+            } else {
+                console.warn('No coach data found.');
+            }
+        } catch (e) {
+            console.error('Error loading coach:', e);
+            document.getElementById('coach-name').textContent = 'Error';
+            document.getElementById('coach-speech').textContent = 'Error loading coach data.';
+        }
+    }
+
+    // Submit contact form
+    document.getElementById('contact-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const button = e.target.querySelector('button');
+        showLoading(button);
+        const name = document.getElementById('contact-name').value.trim();
+        const email = document.getElementById('contact-email').value.trim();
+        const subject = document.getElementById('contact-subject').value.trim();
+        const message = document.getElementById('contact-message').value.trim();
+
+        if (!name || !email || !message) {
+            alert('Name, email, and message are required.');
+            hideLoading(button);
+            return;
         }
 
-        // Submit contact form
-        document.getElementById('contact-form').addEventListener('submit', async e => {
-            e.preventDefault();
-            const button = e.target.querySelector('button');
-            showLoading(button);
-            const name = document.getElementById('contact-name').value.trim();
-            const email = document.getElementById('contact-email').value.trim();
-            const subject = document.getElementById('contact-subject').value.trim();
-            const message = document.getElementById('contact-message').value.trim();
-            
-            if (!name || !email || !message) {
-                alert('Name, email, and message are required.');
-                hideLoading(button);
-                return;
-            }
-            
-            try {
-                // Simulate form submission
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                alert('Message sent successfully!');
-                e.target.reset();
-            } catch (e) {
-                alert('Error sending message: ' + e.message);
-            } finally {
-                hideLoading(button);
-            }
+        try {
+            await addDoc(collection(db, 'contacts'), {
+                name,
+                email,
+                subject,
+                message,
+                timestamp: serverTimestamp()
+            });
+            alert('Message sent successfully!');
+            e.target.reset();
+        } catch (e) {
+            console.error('Error sending message:', e);
+            alert('Error sending message: ' + e.message);
+        } finally {
+            hideLoading(button);
+        }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        loadPlayers();
+        loadNews();
+        loadSchedule();
+        loadNextGame();
+        loadSponsors();
+        loadStats();
+        loadGallery();
+        loadCoach();
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
         });
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPlayers();
-            loadNews();
-            loadSchedule();
-            loadNextGame();
-            loadSponsors();
-            loadStats();
-            loadGallery();
-            
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    if (this.getAttribute('href').startsWith('#')) {
-                        e.preventDefault();
-                        const target = document.querySelector(this.getAttribute('href'));
-                        if (target) {
-                            window.scrollTo({
-                                top: target.offsetTop - 80,
-                                behavior: 'smooth'
-                            });
-                        }
-                    }
-                });
-            });
-            
-            // Close mobile menu on link click
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.remove('open');
-                    mobileMenuToggle.querySelector('i').classList.add('fa-bars');
-                    mobileMenuToggle.querySelector('i').classList.remove('fa-times');
-                });
+        // Close mobile menu on link click
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                mobileMenuToggle.querySelector('i').classList.add('fa-bars');
+                mobileMenuToggle.querySelector('i').classList.remove('fa-times');
             });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
