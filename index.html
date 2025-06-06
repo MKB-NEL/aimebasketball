@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Official AIME Basketball Team Website">
+    <title>AIME Basketball Team - Official Website</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#E74C3C',  // Basketball orange-red
+                        secondary: '#2C3E50', // Dark blue
+                        accent: '#F39C12',    // Golden yellow
+                    },
+                    fontFamily: {
+                        'sans': ['"Poppins"', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-custom {
+            animation: bounce 1s infinite;
+        }
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .player-card:hover .player-image, .player-card:focus-within .player-image {
+            transform: scale(1.05);
+        }
+        .news-card:hover, .news-card:focus-within {
+            transform: translateY(-5px);
+        }
+        .spinner {
+            display: none;
+        }
+        .loading .spinner {
+            display: inline-block;
+        }
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .sticky-nav {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .bg-court {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDEwMDAgNjAwIj48cmVjdCB3aWR0aD0iMTAwMCIgaGVpZ2h0PSI2MDAiIGZpbGw9IiMyYzNlNTAiLz48cmVjdCB4PSIxMDAiIHk9IjUwIiB3aWR0aD0iODAwIiBoZWlnaHQ9IjUwMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjM5YzEyIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNTAwIiB5MT0iNTAiIHgyPSI1MDAiIHkyPSI1NTAiIHN0cm9rZT0iI2YzOWMxMiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGNpcmNsZSBjeD0iNTAwIiBjeT0iMzAwIiByPSI2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjM5YzEyIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI1MDAiIGN5PSIzMDAiIHI9IjEwIiBmaWxsPSIjZjM5YzEyIi8+PC9zdmc+');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .court-overlay {
+            background-color: rgba(44, 62, 80, 0.85);
+        }
+        .hoop-icon {
+            color: #F39C12;
+            text-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-100">
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full bg-secondary text-white z-50 transition-shadow">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <a href="index.html" class="flex items-center space-x-2" aria-label="AIME Basketball Team">
+                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                        <i class="fas fa-basketball-hoop hoop-icon text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold hidden md:block">AIME BASKETBALL TEAM</span>
+                </a>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#home" class="hover:text-accent transition duration-300 font-medium">HOME</a>
+                    <a href="#news" class="hover:text-accent transition duration-300 font-medium">NEWS</a>
+                    <a href="#team" class="hover:text-accent transition duration-300 font-medium">OUR TEAM</a>
+                    <a href="#schedule" class="hover:text-accent transition duration-300 font-medium">SCHEDULE</a>
+                    <a href="#gallery" class="hover:text-accent transition duration-300 font-medium">GALLERY</a>
+                    <a href="#contact" class="hover:text-accent transition duration-300 font-medium">CONTACT</a>
+                </div>
+                <button id="mobile-menu-toggle" class="md:hidden text-white focus:outline-none" aria-label="Toggle mobile menu">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu md:hidden bg-secondary text-white fixed top-20 right-0 w-3/4 h-full shadow-lg">
+            <div class="flex flex-col p-4 space-y-4">
+                <a href="#home" class="text-lg font-medium hover:text-accent transition duration-300">HOME</a>
+                <a href="#news" class="text-lg font-medium hover:text-accent transition duration-300">NEWS</a>
+                <a href="#team" class="text-lg font-medium hover:text-accent transition duration-300">OUR TEAM</a>
+                <a href="#schedule" class="text-lg font-medium hover:text-accent transition duration-300">SCHEDULE</a>
+                <a href="#gallery" class="text-lg font-medium hover:text-accent transition duration-300">GALLERY</a>
+                <a href="#contact" class="text-lg font-medium hover:text-accent transition duration-300">CONTACT</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-32 pb-20 bg-court court-overlay text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-0 left-0 w-full h-full bg-repeat" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI0MywxNTYsMTgsMC4xKSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+');"></div>
+        </div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0 text-center md:text-left">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6 gradient-text" style="background-image: linear-gradient(to right, #F39C12, #E74C3C);">
+                        AIME BASKETBALL TEAM
+                    </h1>
+                    <p class="text-lg md:text-xl mb-8 text-accent">
+                        Dedication. Discipline. Dominance. Our journey to basketball excellence.
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="#team" class="bg-primary hover:bg-red-600 text-white px-6 py-3 rounded-md font-bold transition duration-300">
+                            MEET THE TEAM
+                        </a>
+                        <a href="#schedule" class="bg-accent hover:bg-yellow-600 text-gray-900 px-6 py-3 rounded-md font-bold transition duration-300">
+                            VIEW SCHEDULE
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Team Photo" class="rounded-lg shadow-2xl border-4 border-accent max-w-full h-auto">
+                        <div class="absolute -top-4 -right-4 bg-secondary text-white px-3 py-1 rounded-full shadow-md animate-bounce-custom">
+                            <i class="fas fa-trophy mr-1"></i> 2023 Champions
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- Next Game Section -->
+    <section id="next-game" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-12 text-center text-secondary">NEXT GAME</h2>
+            <div id="next-game-container" class="bg-gray-100 rounded-xl p-8 max-w-2xl mx-auto text-center">
+                <div class="skeleton h-8 w-3/4 mx-auto mb-4"></div>
+                <div class="skeleton h-6 w-1/2 mx-auto mb-4"></div>
+                <div class="skeleton h-6 w-1/2 mx-auto"></div>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- Sponsors Section -->
+    <section id="sponsors" class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-8 text-center text-secondary">OUR SPONSORS</h2>
+            <div id="sponsors-container" class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+                <div class="skeleton w-32 h-16 rounded-md"></div>
+                <div class="skeleton w-32 h-16 rounded-md"></div>
+                <div class="skeleton w-32 h-16 rounded-md"></div>
+                <div class="skeleton w-32 h-16 rounded-md"></div>
+                <div class="skeleton w-32 h-16 rounded-md"></div>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- News Section -->
+    <section id="news" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="text-3xl font-bold text-secondary">LATEST NEWS</h2>
+                <a href="#" class="text-primary hover:text-red-700 font-medium flex items-center">
+                    VIEW ALL NEWS <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+            <div id="news-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="skeleton h-96 rounded-lg"></div>
+                <div class="skeleton h-96 rounded-lg"></div>
+                <div class="skeleton h-96 rounded-lg"></div>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- Schedule Section -->
+    <section id="schedule" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-12 text-center text-secondary">GAME SCHEDULE</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-md">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th class="py-3 px-6 text-left">Date</th>
+                            <th class="py-3 px-6 text-left">Opponent</th>
+                            <th class="py-3 px-6 text-center">Location</th>
+                            <th class="py-3 px-6 text-center">Time</th>
+                            <th class="py-3 px-6 text-center">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-table" class="divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="5" class="py-4 px-6 text-center text-gray-500">Loading schedule...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- Stats Section -->
+    <section id="stats" class="py-16 bg-secondary text-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-12 text-center">TEAM STATS</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                <div class="bg-primary rounded-lg p-6 text-center shadow-lg">
+                    <div class="text-4xl font-bold mb-2" id="stats-games">-</div>
+                    <div class="text-sm uppercase tracking-wider">Games</div>
+                </div>
+                <div class="bg-accent rounded-lg p-6 text-center shadow-lg">
+                    <div class="text-4xl font-bold mb-2" id="stats-wins">-</div>
+                    <div class="text-sm uppercase tracking-wider">Wins</div>
+                </div>
+                <div class="bg-primary rounded-lg p-6 text-center shadow-lg">
+                    <div class="text-4xl font-bold mb-2" id="stats-points">-</div>
+                    <div class="text-sm uppercase tracking-wider">PPG</div>
+                </div>
+                <div class="bg-accent rounded-lg p-6 text-center shadow-lg">
+                    <div class="text-4xl font-bold mb-2" id="stats-streak">-</div>
+                    <div class="text-sm uppercase tracking-wider">Win Streak</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- Team Section -->
+    <section id="team" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-12 text-center text-secondary">OUR TEAM</h2>
+            <div class="mb-16">
+                <div class="bg-gray-100 rounded-xl p-6 max-w-4xl mx-auto shadow-md">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-1/3 mb-6 md:mb-0 flex justify-center">
+                            <img id="coach-image" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Head Coach" class="rounded-lg shadow-md w-48 h-64 object-cover">
+                        </div>
+                        <div class="md:w-2/3 md:pl-8 text-center md:text-left">
+                            <div class="text-sm text-primary font-bold mb-2 uppercase">HEAD COACH</div>
+                            <h3 id="coach-name" class="text-2xl font-bold mb-2">James Davidson</h3>
+                            <div id="coach-badges" class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs bg-accent text-secondary px-2 py-1 rounded">15+ Years Experience</span>
+                                <span class="text-xs bg-primary text-white px-2 py-1 rounded">2x Championship Winner</span>
+                                <span class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded">Former NBA Assistant</span>
+                            </div>
+                            <p id="coach-speech" class="text-gray-600 mb-4">
+                                "Our philosophy is simple: outwork, outthink, outperform. Every practice, every game, every moment is an opportunity to improve. The journey to greatness is built on discipline, teamwork, and relentless effort."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h3 class="text-2xl font-bold text-secondary">TEAM ROSTER</h3>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button class="bg-primary text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-red-600 focus:bg-red-600" onclick="filterPlayers('all')">ALL</button>
+                        <button class="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-200 focus:bg-gray-200" onclick="filterPlayers('Guard')">GUARDS</button>
+                        <button class="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-200 focus:bg-gray-200" onclick="filterPlayers('Forward')">FORWARDS</button>
+                        <button class="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm font-medium hover:bg-gray-200 focus:bg-gray-200" onclick="filterPlayers('Center')">CENTERS</button>
+                    </div>
+                </div>
+            </div>
+            <div id="players-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                <div class="skeleton h-80 rounded-lg"></div>
+                <div class="skeleton h-80 rounded-lg"></div>
+                <div class="skeleton h-80 rounded-lg"></div>
+                <div class="skeleton h-80 rounded-lg"></div>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="text-3xl font-bold text-secondary">TEAM GALLERY</h2>
+                <a href="#" class="text-primary hover:text-red-700 font-medium flex items-center">
+                    VIEW ALL PHOTOS <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+            <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="skeleton h-64 rounded-lg"></div>
+                <div class="skeleton h-64 rounded-lg"></div>
+                <div class="skeleton h-64 rounded-lg"></div>
+            </div>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="container mx-auto px-4 max-w-3xl">
+            <h2 class="text-3xl font-bold mb-12 text-center text-secondary">CONTACT US</h2>
+            <form id="contact-form" class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="contact-name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" id="contact-name" placeholder="Your name" class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label for="contact-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="contact-email" placeholder="Your email address" class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="contact-subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                    <input type="text" id="contact-subject" placeholder="Subject" class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label for="contact-message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                    <textarea id="contact-message" class="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" rows="5" placeholder="Your message..." required></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-red-600 text-white px-6 py-3 rounded-md font-bold transition duration-300 flex items-center justify-center">
+                    SEND MESSAGE
+                    <span class="spinner inline-block w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin ml-2"></span>
+                </button>
+            </form>
+        </div>
+    </section>
+    <hr class="border-gray-300">
+
+    <!-- CTA Section -->
+    <section class="py-12 bg-accent text-secondary">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-4">JOIN OUR BASKETBALL FAMILY</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Stay updated with the latest news, game schedules, and team events.</p>
+            <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" placeholder="Your email address" class="px-4 py-3 rounded-md border-none focus:outline-none focus:ring-2 focus:ring-secondary flex-grow">
+                <button class="bg-secondary text-white px-6 py-3 rounded-md font-bold hover:bg-gray-800 transition duration-300">
+                    SUBSCRIBE
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-secondary text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">AIME BASKETBALL TEAM</h3>
+                    <p class="text-gray-400 mb-4">
+                        Established in 2010, ABT has become one of the most respected basketball programs, known for our dedication to excellence both on and off the court.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-accent transition duration-300" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-accent transition duration-300" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-accent transition duration-300" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-accent transition duration-300" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">TEAM</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#team" class="text-gray-400 hover:text-accent transition duration-300">Roster</a></li>
+                        <li><a href="#coach" class="text-gray-400 hover:text-accent transition duration-300">Coaching Staff</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition duration-300">Academy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition duration-300">Tryouts</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">SCHEDULE</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#schedule" class="text-gray-400 hover:text-accent transition duration-300">Games</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition duration-300">Events</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition duration-300">Training Calendar</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">FANS</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition duration-300">Tickets</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-accent transition duration-300">Merchandise</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-accent transition duration-300">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+                <p>© 2023 AIME Basketball Team. All rights reserved. | Designed with <i class="fas fa-heart text-primary mx-1"></i> by ABT Digital Team</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Sample data - In a real app, this would come from a database
+        const samplePlayers = [
+            {
+                number: 7,
+                name: "Michael Jordan",
+                position: "Guard",
+                image: "https://images.unsplash.com/photo-1593998066526-65d23e43bb1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                nationality: "USA",
+                role: "Captain"
+            },
+            {
+                number: 23,
+                name: "LeBron James",
+                position: "Forward",
+                image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
+                nationality: "USA",
+                role: "Vice Captain"
+            },
+            {
+                number: 33,
+                name: "Larry Bird",
+                position: "Forward",
+                image: "https://images.unsplash.com/photo-1488048924544-8164e1300cb9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                nationality: "USA",
+                role: "Scorer"
+            },
+            {
+                number: 34,
+                name: "Shaquille O'Neal",
+                position: "Center",
+                image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                nationality: "USA",
+                role: "Rebounder"
+            },
+            {
+                number: 30,
+                name: "Stephen Curry",
+                position: "Guard",
+                image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=715&q=80",
+                nationality: "USA",
+                role: "Shooter"
+            }
+        ];
+
+        const sampleNews = [
+            {
+                title: "Team Wins Championship",
+                content: "Our team has won the national championship with an outstanding performance throughout the season.",
+                image: "https://images.unsplash.com/photo-1516450360452-931d163bb593?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                category: "Match Report",
+                date: "2023-06-15"
+            },
+            {
+                title: "New Player Signing",
+                content: "We're excited to announce the signing of a top-tier player to strengthen our roster.",
+                image: "https://images.unsplash.com/photo-1548092372-44d6dd37dfa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+                category: "Transfer",
+                date: "2023-05-22"
+            },
+            {
+                title: "Youth Academy Launch",
+                content: "Our new youth academy program will start next month to develop young basketball talent.",
+                image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1029&q=80",
+                category: "Academy",
+                date: "2023-04-10"
+            }
+        ];
+
+        const sampleGames = [
+            { date: "2023-07-15", opponent: "City Rivals", location: "Home", time: "19:30", result: "W 98-85" },
+            { date: "2023-07-22", opponent: "State Champions", location: "Away", time: "20:00", result: "L 102-107" },
+            { date: "2023-08-05", opponent: "Metro Stars", location: "Away", time: "18:00", result: "W 112-95" },
+            { date: "2023-08-12", opponent: "Elite Team", location: "Home", time: "19:30", result: "W 89-78" },
+            { date: "2023-08-19", opponent: "Basketball Club", location: "Home", time: "17:00", result: "L 91-96" },
+            { date: "2023-08-26", opponent: "Golden Players", location: "Away", time: "20:00", result: "-" }
+        ];
+
+        // Show loading spinner
+        function showLoading(button) {
+            button.classList.add('loading');
+            button.disabled = true;
+        }
+
+        // Hide loading spinner
+        function hideLoading(button) {
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            mobileMenuToggle.querySelector('i').classList.toggle('fa-bars');
+            mobileMenuToggle.querySelector('i').classList.toggle('fa-times');
+        });
+
+        // Sticky navbar on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('sticky-nav');
+            } else {
+                navbar.classList.remove('sticky-nav');
+            }
+        });
+
+        // Load players
+        function loadPlayers(filter = 'all') {
+            const container = document.getElementById('players-container');
+            container.innerHTML = '';
+            
+            const filteredPlayers = filter === 'all' ? samplePlayers : 
+                samplePlayers.filter(player => player.position === filter);
+
+            if (filteredPlayers.length === 0) {
+                container.innerHTML = '<p class="col-span-full text-center text-gray-600">No players found for this position.</p>';
+                return;
+            }
+
+            filteredPlayers.forEach(player => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md player-card hover:shadow-lg transition duration-300" tabindex="0">
+                        <div class="relative overflow-hidden h-56">
+                            <img src="${player.image || 'https://via.placeholder.com/300x400?text=Player'}" alt="${player.name}" class="w-full h-full object-cover player-image transition duration-300">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                <div class="text-white font-bold text-xl">#${player.number}</div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-bold">${player.name}</h4>
+                            <p class="text-sm text-gray-600 mb-2">${player.position}</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">${player.nationality}</span>
+                                ${player.role ? `<span class="text-xs bg-primary text-white px-2 py-1 rounded">${player.role}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Filter players
+        window.filterPlayers = function(position) {
+            loadPlayers(position);
+            document.querySelectorAll('#team button').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-800');
+                if (btn.textContent.toLowerCase() === position.toLowerCase() || (position === 'all' && btn.textContent === 'ALL')) {
+                    btn.classList.add('bg-primary', 'text-white');
+                    btn.classList.remove('bg-gray-100', 'text-gray-800');
+                }
+            });
+        };
+
+        // Load news
+        function loadNews() {
+            const container = document.getElementById('news-container');
+            container.innerHTML = '';
+            
+            sampleNews.forEach(news => {
+                container.innerHTML += `
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md news-card hover:shadow-lg transition duration-300" tabindex="0">
+                        <div class="relative overflow-hidden h-56">
+                            <img src="${news.image || 'https://via.placeholder.com/600x400?text=News'}" alt="${news.title}" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4 ${news.category === 'Match Report' ? 'bg-primary' : news.category === 'Transfer' ? 'bg-accent' : 'bg-gray-500'} text-white px-3 py-1 rounded-md text-sm font-bold">
+                                ${news.category || 'General'}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-xs text-gray-500 mb-2">${new Date(news.date).toLocaleDateString()}</div>
+                            <h3 class="text-lg font-bold mb-2">${news.title}</h3>
+                            <p class="text-gray-600 text-sm">${news.content.substring(0, 100)}...</p>
+                            <a href="#" class="mt-3 inline-block text-sm font-medium text-primary hover:text-red-700">
+                                Read More <i class="fas fa-chevron-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Load schedule
+        function loadSchedule() {
+            const table = document.getElementById('schedule-table');
+            table.innerHTML = '';
+            
+            sampleGames.forEach(game => {
+                const row = document.createElement('tr');
+                row.className = game.date < new Date().toISOString().split('T')[0] ? 'bg-gray-50' : 'bg-white hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="py-3 px-6 whitespace-nowrap">${new Date(game.date).toLocaleDateString()}</td>
+                    <td class="py-3 px-6 whitespace-nowrap font-medium">${game.opponent}</td>
+                    <td class="py-3 px-6 text-center whitespace-nowrap">${game.location}</td>
+                    <td class="py-3 px-6 text-center whitespace-nowrap">${game.time}</td>
+                    <td class="py-3 px-6 text-center whitespace-nowrap font-bold ${game.result.startsWith('W') ? 'text-primary' : game.result.startsWith('L') ? 'text-red-600' : 'text-gray-500'}">
+                        ${game.result}
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        // Load next game
+        function loadNextGame() {
+            const container = document.getElementById('next-game-container');
+            const nextGame = sampleGames.find(game => game.result === '-') || sampleGames[sampleGames.length - 1];
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-4">
+                    <div class="flex flex-col items-center">
+                        <span class="text-2xl font-bold text-secondary">ABT</span>
+                        <img src="https://via.placeholder.com/80x80?text=ABT" class="h-16 w-16" alt="ABT Logo">
+                    </div>
+                    <span class="text-xl text-gray-600">vs</span>
+                    <div class="flex flex-col items-center">
+                        <span class="text-2xl font-bold text-secondary">${nextGame.opponent}</span>
+                        <img src="https://via.placeholder.com/80x80?text=Team" class="h-16 w-16" alt="${nextGame.opponent} Logo">
+                    </div>
+                </div>
+                <div class="text-lg text-gray-700 mb-2">${nextGame.location === 'Home' ? 'Home Game at ABT Arena' : 'Away Game'}</div>
+                <div class="text-md text-gray-600">${new Date(nextGame.date).toLocaleDateString()} at ${nextGame.time}</div>
+                <div class="mt-4">
+                    <button class="bg-primary hover:bg-red-600 text-white px-6 py-2 rounded-md font-bold transition duration-300">
+                        GET TICKETS
+                    </button>
+                </div>
+            `;
+            container.classList.remove('skeleton');
+        }
+
+        // Load sponsors
+        function loadSponsors() {
+            const container = document.getElementById('sponsors-container');
+            container.innerHTML = '';
+            
+            const sponsors = [
+                { name: "Nike", image: "https://via.placeholder.com/150x50?text=Nike" },
+                { name: "Gatorade", image: "https://via.placeholder.com/150x50?text=Gatorade" },
+                { name: "Wilson", image: "https://via.placeholder.com/150x50?text=Wilson" },
+                { name: "Adidas", image: "https://via.placeholder.com/150x50?text=Adidas" },
+                { name: "Spalding", image: "https://via.placeholder.com/150x50?text=Spalding" }
+            ];
+            
+            sponsors.forEach(sponsor => {
+                container.innerHTML += `
+                    <div class="w-32 h-16 flex items-center justify-center">
+                        <img src="${sponsor.image}" alt="${sponsor.name}" class="max-w-full max-h-full object-contain">
+                    </div>
+                `;
+            });
+        }
+
+        // Load stats
+        function loadStats() {
+            document.getElementById('stats-games').textContent = '28';
+            document.getElementById('stats-wins').textContent = '22';
+            document.getElementById('stats-points').textContent = '98.7';
+            document.getElementById('stats-streak').textContent = '5';
+        }
+
+        // Load gallery
+        function loadGallery() {
+            const container = document.getElementById('gallery-container');
+            container.innerHTML = '';
+            
+            const galleryImages = [
+                { image: "https://images.unsplash.com/photo-1543357480-c60d400e7ab6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80", description: "Championship Celebration" },
+                { image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80", description: "Coach Inspiring Team" },
+                { image: "https://images.unsplash.com/photo-1548092372-44d6dd37dfa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80", description: "Intense Game Action" }
+            ];
+            
+            galleryImages.forEach(item => {
+                container.innerHTML += `
+                    <div class="relative group overflow-hidden rounded-lg h-64 shadow-md">
+                        <img src="${item.image}" alt="${item.description}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                            <span class="text-white font-bold text-lg text-center px-4">${item.description}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Submit contact form
+        document.getElementById('contact-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const button = e.target.querySelector('button');
+            showLoading(button);
+            const name = document.getElementById('contact-name').value.trim();
+            const email = document.getElementById('contact-email').value.trim();
+            const subject = document.getElementById('contact-subject').value.trim();
+            const message = document.getElementById('contact-message').value.trim();
+            
+            if (!name || !email || !message) {
+                alert('Name, email, and message are required.');
+                hideLoading(button);
+                return;
+            }
+            
+            try {
+                // Simulate form submission
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                alert('Message sent successfully!');
+                e.target.reset();
+            } catch (e) {
+                alert('Error sending message: ' + e.message);
+            } finally {
+                hideLoading(button);
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPlayers();
+            loadNews();
+            loadSchedule();
+            loadNextGame();
+            loadSponsors();
+            loadStats();
+            loadGallery();
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    if (this.getAttribute('href').startsWith('#')) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            window.scrollTo({
+                                top: target.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+            
+            // Close mobile menu on link click
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('open');
+                    mobileMenuToggle.querySelector('i').classList.add('fa-bars');
+                    mobileMenuToggle.querySelector('i').classList.remove('fa-times');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
