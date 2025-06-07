@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -512,13 +511,17 @@ async function uploadImageToImgBB(file) {
     if (!file) throw new Error('No file selected.');
     const formData = new FormData();
     formData.append('image', file);
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-        method: 'POST',
-        body: formData
-    });
-    const data = await response.json();
-    if (!data.success) throw new Error(data.error?.message || 'Image upload failed.');
-    return data.data.url;
+    try {
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error?.message || 'Image upload failed.');
+        return data.data.url;
+    } catch (e) {
+        throw new Error(`ImgBB upload failed: ${e.message}`);
+    }
 }
 
 // Dashboard
@@ -840,7 +843,7 @@ async function loadGallery() {
         allGallery.forEach(item => {
             galleryList.innerHTML += `
                 <div class="relative rounded-lg overflow-hidden">
-                    <img src="${item.image || 'https://via.placeholder.com/300'}" alt="${item.description}" class="w-full h-48 object-cover">
+                    <img src="${item.image || 'https://placehold.co/300x200'}" alt="${item.description}" class="w-full h-48 object-cover">
                     <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
                         <p class="text-sm truncate">${item.description}</p>
                     </div>
@@ -945,7 +948,7 @@ async function loadSponsors() {
         allSponsors.forEach(sponsor => {
             sponsorsList.innerHTML += `
                 <div class="relative rounded-lg overflow-hidden border border-gray-200 p-4">
-                    <img src="${sponsor.image || 'https://via.placeholder.com/150x50'}" alt="${sponsor.name}" class="h-16 mx-auto object-contain">
+                    <img src="${sponsor.image || 'https://placehold.co/150x50'}" alt="${sponsor.name}" class="h-16 mx-auto object-contain">
                     <p class="text-center mt-2 text-sm font-medium">${sponsor.name}</p>
                     <div class="absolute top-2 right-2 space-x-2">
                         <button onclick="window.editSponsor('${sponsor.id}')" class="text-blue-400 hover:text-blue-600">
@@ -1105,6 +1108,263 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
 });
 ```
+
+#### Corrected Normal Script
+This replaces the problematic normal `<script>` section, fixing the `Unexpected end of input` (likely due to incomplete code and the stray `<xai>` tag) and ensuring `showTab` is defined. It also corrects syntax errors in functions like `renderCoachBadges` and updates event listeners for better reliability.
+
+<xaiArtifact artifact​_id="ba9e1529-a7e4-453e-9987-4d89463e748c" artifact_version_id="4e8f1d23-6a7c-4b9d-a3f4-9b7f8d2e9453" title="admin_ui.js" contentType="text/javascript">
+```javascript
+// UI Elements
+const sidebar = document.getElementById('sidebar');
+const content = document.getElementById('content');
+const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+const modal = document.getElementById('confirmation-modal');
+const modalTitle = document.getElementById('modal-title');
+const modalMessage = document.getElementById('modal-message');
+const modalCancel = document.getElementById('modal-cancel');
+const modalConfirm = document.getElementById('modal-confirm');
+
+// Global variables
+let pendingAction = null;
+
+// Sidebar Toggle
+toggleSidebarBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('expanded');
+    toggleSidebarBtn.innerHTML = sidebar.classList.contains('collapsed') ? 
+        '<i class="fas fa-chevron-right"></i>' : '<i class="fas fa-chevron-left"></i>';
+});
+
+// Modal Functions
+window.showConfirmation = (title, message, onConfirm) => {
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    modal.classList.remove('hidden');
+    pendingAction = onConfirm;
+};
+
+modalCancel.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    pendingAction = null;
+});
+
+modalConfirm.addEventListener('click', () => {
+    if (pendingAction) pendingAction();
+    modal.classList.add('hidden');
+    pendingAction = null;
+});
+
+// Tab Navigation
+window.showTab = (tabName) => {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+    const tabElement = document.getElementById(`${tabName}-tab`);
+    if (tabElement) tabElement.classList.remove('hidden');
+};
+
+// News Filtering
+window.filterNews = () => {
+    const search = document.getElementById('news-search').value.toLowerCase();
+    const category = document.getElementById('news-filter').value;
+    const newsList = document.getElementById('news-list');
+    const rows = newsList.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+        const title = row.cells[0]?.textContent.toLowerCase() || '';
+        const rowCategory = row.cells[1]?.textContent || '';
+        const matchesSearch = title.includes(search);
+        const matchesCategory = !category || rowCategory === category;
+        row.style.display = matchesSearch && matchesCategory ? '' : 'none';
+    });
+};
+
+// Loading Spinner
+window.showLoading = (buttonId) => {
+    const btnText = document.getElementById(`${buttonId}-btn-text`);
+    const spinner = document.getElementById(`${buttonId}-spinner`);
+    if (btnText) btnText.textContent = buttonId.includes('form') ? 'Saving...' : 'Processing...';
+    if (spinner) spinner.classList.remove('hidden');
+};
+
+window.hideLoading = (buttonId, resetText) => {
+    const btnText = document.getElementById(`${buttonId}-btn-text`);
+    const spinner = document.getElementById(`${buttonId}-spinner`);
+    if (btnText) btnText.textContent = resetText;
+    if (spinner) spinner.classList.add('hidden');
+};
+
+// Image Preview
+window.previewImage = (inputId, previewId, existingImage = '') => {
+    const input = document.getElementById(inputId);
+    const previewContainer = document.getElementById(`${previewId}-container`);
+    previewContainer.innerHTML = '';
+    
+    if (existingImage && !input.files[0]) {
+        const img = document.createElement('img');
+        img.src = existingImage;
+        img.classList.add('h-32', 'object-contain', 'border', 'rounded');
+        previewContainer.appendChild(img);
+    }
+    
+    input.addEventListener('change', () => {
+        const file = input.files[0];
+        previewContainer.innerHTML = '';
+        
+        if (file) {
+            if (!['image/jpeg', 'image/png', 'image/bmp', 'image/gif'].includes(file.type)) {
+                alert('Invalid file type. Please select JPG, PNG, BMP, or GIF.');
+                input.value = '';
+                return;
+            }
+            if (file.size > 32 * 1024 * 1024) {
+                alert('File size exceeds 32MB limit.');
+                input.value = '';
+                return;
+            }
+            
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.classList.add('h-32', 'object-contain', 'border', 'rounded');
+            previewContainer.appendChild(img);
+        }
+    });
+};
+
+window.clearPreview = (previewId) => {
+    document.getElementById(`${previewId}-container`).innerHTML = '';
+};
+
+// Player Form
+window.showAddPlayerForm = (title = 'Add New Player', btnText = 'Add Player') => {
+    const formContainer = document.getElementById('player-form-container');
+    document.getElementById('player-form-title').textContent = title;
+    document.getElementById('player-form-btn-text').textContent = btnText;
+    document.getElementById('player-form').reset();
+    document.getElementById('player-id').value = '';
+    formContainer.classList.remove('hidden');
+};
+
+window.hidePlayerForm = () => {
+    document.getElementById('player-form-container').classList.add('hidden');
+};
+
+// Coach Badges
+window.renderCoachBadges = (badges) => {
+    const container = document.getElementById('coach-badges-container');
+    container.innerHTML = '';
+    badges.forEach((badge, index) => {
+        container.innerHTML += `
+            <div class="badge-input-container">
+                <input type="text" value="${badge}" class="w-full px-4 py-2 border border-gray-300 rounded-md" readonly>
+                <button type="button" onclick="window.removeCoachBadge(${index})" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+    });
+};
+
+window.addCoachBadge = () => {
+    const newBadge = document.getElementById('new-badge').value.trim();
+    if (newBadge) {
+        const badges = Array.from(document.querySelectorAll('#coach-badges-container input')).map(input => input.value);
+        badges.push(newBadge);
+        window.renderCoachBadges(badges);
+        document.getElementById('new-badge').value = '';
+    }
+};
+
+window.removeCoachBadge = (index) => {
+    const badges = Array.from(document.querySelectorAll('#coach-badges-container input')).map(input => input.value);
+    badges.splice(index, 1);
+    window.renderCoachBadges(badges);
+};
+
+// News Form
+window.showAddNewsForm = (title = 'Add News', btnText = 'Add News') => {
+    const formContainer = document.getElementById('news-form-container');
+    document.getElementById('news-form-title').textContent = title;
+    document.getElementById('news-form-btn-text').textContent = btnText;
+    document.getElementById('news-form').reset();
+    document.getElementById('news-id').value = '';
+    formContainer.classList.remove('hidden');
+};
+
+window.hideNewsForm = () => {
+    document.getElementById('news-form-container').classList.add('hidden');
+};
+
+window.renderNews = (newsItems) => {
+    const newsList = document.getElementById('news-list');
+    newsList.innerHTML = newsItems.length === 0 ? '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No news found.</td></tr>' : '';
+    
+    newsItems.forEach(item => {
+        newsList.innerHTML += `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">${item.title}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${item.category}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${item.date.toDate().toLocaleDateString()}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right">
+                    <button onclick="window.editNews('${item.id}')" class="text-blue-600 hover:text-blue-800 mr-3">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="window.deleteNews('${item.id}', '${item.title}')" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+};
+
+// Gallery Form
+window.showAddGalleryForm = (title = 'Add Image to Gallery', btnText = 'Add Image') => {
+    const formContainer = document.getElementById('gallery-form-container');
+    document.getElementById('gallery-form-title').textContent = title;
+    document.getElementById('gallery-form-btn-text').textContent = btnText;
+    document.getElementById('gallery-form').reset();
+    document.getElementById('gallery-id').value = '';
+    window.clearPreview('gallery-preview');
+    window.previewImage('gallery-image', 'gallery-preview');
+    formContainer.classList.remove('hidden');
+};
+
+window.hideGalleryForm = () => {
+    document.getElementById('gallery-form-container').classList.add('hidden');
+};
+
+// Sponsor Form
+window.showAddSponsorForm = (title = 'Add Sponsor', btnText = 'Add Sponsor') => {
+    const formContainer = document.getElementById('sponsor-form-container');
+    document.getElementById('sponsor-form-title').textContent = title;
+    document.getElementById('sponsor-form-btn-text').textContent = btnText;
+    document.getElementById('sponsor-form').reset();
+    document.getElementById('sponsor-id').value = '';
+    window.clearPreview('sponsor-preview');
+    window.previewImage('sponsor-image', 'sponsor-preview');
+    formContainer.classList.remove('hidden');
+};
+
+window.hideSponsorForm = () => {
+    document.getElementById('sponsor-form-container').classList.add('hidden');
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    window.showTab('dashboard');
+    const newsSearch = document.getElementById('news-search');
+    const newsFilter = document.getElementById('news-filter');
+    if (newsSearch) newsSearch.addEventListener('input', window.filterNews);
+    if (newsFilter) newsFilter.addEventListener('change', window.filterNews);
+
+    // Add event listeners to sidebar links
+    document.querySelectorAll('.sidebar a').forEach(link => {
+        const tabName = link.getAttribute('href').replace('#', '');
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.showTab(tabName);
+        });
+    });
+});
     </script>
 </body>
 </html>
